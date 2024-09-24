@@ -6,7 +6,6 @@ wandb:
   use: True
   project: SynthAC_GPS_initial
   group: All5
-  entity: linusbao
 dataset:
   format: EmJ-Synth-All5
   name: AvgClust

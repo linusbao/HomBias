@@ -6,7 +6,6 @@ wandb:
   use: True
   project: SynthAC_SA_initial
   group: none
-  entity: linusbao
 dataset:
   format: EmJ-Synth
   name: AvgClust

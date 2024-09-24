@@ -6,7 +6,6 @@ wandb:
   use: True
   project: SynthSR_GPS_initial
   group: Spasm
-  entity: linusbao
 dataset:
   format: EmJ-Synth-Spasm
   name: SpecRad

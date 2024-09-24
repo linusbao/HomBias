@@ -6,7 +6,6 @@ wandb:
   use: True
   project: synth-3-MLP
   group: synth-MLP-all5-avgClus
-  entity: subgraph-hombasis-org
 dataset:
   format: EmJ-Synth-All5
   name: AvgClust
