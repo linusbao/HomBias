@@ -136,7 +136,8 @@ def custom_train(loggers, loaders, model, optimizer, scheduler):
         else:
             wandb_name = cfg.wandb.name
         group = cfg.wandb.group if hasattr(cfg.wandb, "group") else None #editted to accomodate "group"
-        run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project, group=group,
+        tags = cfg.wandb.tags if hasattr(cfg.wandb, "tags") else None #editted to accomodate "tags"
+        run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project, group=group, tags=tags,
                          name=wandb_name) #editted to accomodate "group"
         run.config.update(cfg_to_dict(cfg))
 
