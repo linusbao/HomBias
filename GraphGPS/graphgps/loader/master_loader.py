@@ -9,7 +9,7 @@ import torch_geometric.transforms as T
 from numpy.random import default_rng
 from ogb.graphproppred import PygGraphPropPredDataset
 from torch_geometric.datasets import (Actor, GNNBenchmarkDataset, Planetoid,
-                                      TUDataset, WebKB, WikipediaNetwork, ZINC)
+                                      TUDataset, WebKB, WikipediaNetwork, ZINC, LRGBDataset)
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.loader import load_pyg, load_ogb, set_dataset_attr
 from torch_geometric.graphgym.register import register_loader
@@ -32,6 +32,9 @@ import sys
 import os
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench'))
 from data import get_data
+
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'peptides'))
+import get_pep_data
 
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','qm9','data_GraphGym_QM9'))
 from CustomDataset import CustomDataset
@@ -550,6 +553,54 @@ def preformat_Peptides(dataset_dir, name):
     dataset.split_idxs = [s_dict[s] for s in ['train', 'val', 'test']]
     return dataset
 
+
+def preformat_Peptides(dataset_dir, name):
+    """Load Peptides dataset, functional or structural.
+
+    Note: This dataset requires RDKit dependency!
+
+    Args:
+        dataset_dir: path where to store the cached dataset
+        name: the type of dataset split:
+            - 'peptides-functional' (10-task classification)
+            - 'peptides-structural' (11-task regression)
+
+    Returns:
+        PyG dataset object
+    """
+    save_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'datasets')
+
+    dataset_type = name.split('-', 1)[1]
+
+    if '-' in dataset_type:
+        dataset_type, hom_type = dataset_type.split('-', 1)
+    else:
+        hom_type = None
+
+    if dataset_type == 'functional':
+        dataset_type = 'peptides-func'
+    elif dataset_type == 'structural':
+        dataset_type = 'peptides-struct'
+
+    print(f'DATASET NAME : {dataset_type}')
+    dataset = join_dataset_splits(
+        [LRGBDataset(root=save_dir, name=dataset_type, split=split)
+        for split in ['train', 'val', 'test']]
+    )
+
+    if hom_type != None:
+        data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','peptides', 'data')
+        if hom_type == 'Spasm' or hom_type == 'spasm':
+            hom_file = "peptides_c78.json"
+        elif hom_type == 'All5' or hom_type == 'all5':
+            hom_file = 'peptides_v5c6.json'
+        else:
+            raise Exception('Specify dataset to load by giving dataset.name as peptides-X-Y where X can be \"functional\" or \"structural\" and Y can be \"Spasm\", \"All5\", or nothing at all.')
+
+        idx_list = [] #assuming using all counts in JSON
+        dataset = get_pep_data.add_peptide_hom(hom_file, idx_list, data_dir, dataset)
+
+    return dataset
 
 def preformat_TUDataset(dataset_dir, name):
     """Load and preformat datasets from PyG's TUDataset.
