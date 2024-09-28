@@ -533,41 +533,6 @@ def preformat_Peptides(dataset_dir, name):
     Returns:
         PyG dataset object
     """
-    try:
-        # Load locally to avoid RDKit dependency until necessary.
-        from graphgps.loader.dataset.peptides_functional import \
-            PeptidesFunctionalDataset
-        from graphgps.loader.dataset.peptides_structural import \
-            PeptidesStructuralDataset
-    except Exception as e:
-        logging.error('ERROR: Failed to import Peptides dataset class, '
-                      'make sure RDKit is installed.')
-        raise e
-
-    dataset_type = name.split('-', 1)[1]
-    if dataset_type == 'functional':
-        dataset = PeptidesFunctionalDataset(dataset_dir)
-    elif dataset_type == 'structural':
-        dataset = PeptidesStructuralDataset(dataset_dir)
-    s_dict = dataset.get_idx_split()
-    dataset.split_idxs = [s_dict[s] for s in ['train', 'val', 'test']]
-    return dataset
-
-
-def preformat_Peptides(dataset_dir, name):
-    """Load Peptides dataset, functional or structural.
-
-    Note: This dataset requires RDKit dependency!
-
-    Args:
-        dataset_dir: path where to store the cached dataset
-        name: the type of dataset split:
-            - 'peptides-functional' (10-task classification)
-            - 'peptides-structural' (11-task regression)
-
-    Returns:
-        PyG dataset object
-    """
     save_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'datasets')
 
     dataset_type = name.split('-', 1)[1]
